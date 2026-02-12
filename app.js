@@ -59,7 +59,7 @@
     if (total > 0) {
       matchHint.textContent = total + " words matched";
     } else {
-      matchHint.textContent = "No match — \"" + query + "\" will be used directly in your tag";
+      matchHint.textContent = "";
     }
   }
 
