@@ -286,7 +286,7 @@
       card.innerHTML =
         '<div class="card__top">' +
         '<span class="card__num">#' + num + "</span>" +
-        '<span class="material-icons card__copy-icon">content_copy</span>' +
+        '<span class="material-icons card__copy-icon" aria-hidden="true">content_copy</span>' +
         "</div>" +
         '<div class="card__tag">' + item.tag + "</div>" +
         '<div class="card__meta">' + styleName + " &bull; " + genderName + "</div>";
@@ -309,12 +309,11 @@
 
   // ===== Copy =====
   function copyToClipboard(text, card) {
-    if (!navigator.clipboard) return;
+    if (card.classList.contains("card--copied")) return;
 
-    navigator.clipboard.writeText(text).then(function () {
+    function onSuccess() {
       card.classList.add("card--copied");
 
-      // Replace copy icon with badge
       var iconEl = card.querySelector(".card__copy-icon");
       if (iconEl) {
         var badge = document.createElement("span");
@@ -329,11 +328,25 @@
         if (badgeEl) {
           var icon = document.createElement("span");
           icon.className = "material-icons card__copy-icon";
+          icon.setAttribute("aria-hidden", "true");
           icon.textContent = "content_copy";
           badgeEl.parentNode.replaceChild(icon, badgeEl);
         }
       }, COPY_FEEDBACK_MS);
-    });
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onSuccess);
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); onSuccess(); } catch (e) { /* silent */ }
+      document.body.removeChild(ta);
+    }
   }
 
   // ===== Auto-generate on load =====
