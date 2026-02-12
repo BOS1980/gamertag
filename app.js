@@ -56,7 +56,11 @@
     }
     var total =
       getFilteredWords(adjectives).length + getFilteredWords(nouns).length;
-    matchHint.textContent = total + " words matched";
+    if (total > 0) {
+      matchHint.textContent = total + " words matched";
+    } else {
+      matchHint.textContent = "No match — \"" + query + "\" will be used directly in your tag";
+    }
   }
 
   // ===== Style Tag Toggle =====
