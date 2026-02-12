@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gamertag Generator | Elevate Your Identity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#06d0f9",
+          "background-dark": "#0f1f23",
+        },
+        fontFamily: {
+          "display": ["Space Grotesk"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .hud-border {
+    border: 1px solid rgba(6, 208, 249, 0.3);
+    box-shadow: 0 0 15px rgba(6, 208, 249, 0.1);
+  }
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(6, 208, 249, 0.4);
+  }
+  .neon-text {
+    text-shadow: 0 0 10px rgba(6, 208, 249, 0.5);
+  }
+  .glass-panel {
+    background: rgba(15, 31, 35, 0.8);
+    backdrop-filter: blur(12px);
+  }
+  .card-enter {
+    animation: cardIn 0.35s ease forwards;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .copied-flash {
+    animation: flash 0.3s ease;
+  }
+  @keyframes flash {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  .btn-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+  }
+  .btn-shine:hover::after {
+    transform: translateX(100%);
+  }
+</style>
+</head>
+<body class="bg-background-dark font-display text-slate-100 min-h-screen">
+
+<!-- Background Glow -->
+<div class="fixed inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+  <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+  <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
+  <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
+</div>
+
+<!-- HUD Corners -->
+<div class="fixed top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-primary/30 pointer-events-none z-50"></div>
+<div class="fixed top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-primary/30 pointer-events-none z-50"></div>
+<div class="fixed bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-primary/30 pointer-events-none z-50"></div>
+<div class="fixed bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-primary/30 pointer-events-none z-50"></div>
+
+<!-- Main Container -->
+<div class="relative z-10 max-w-6xl mx-auto px-4 py-12 md:py-20">
+
+  <!-- Header -->
+  <header class="text-center mb-16">
+    <div class="inline-block px-3 py-1 mb-4 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-bold tracking-[0.2em] uppercase">
+      System Online: v1.0
+    </div>
+    <h1 class="text-5xl md:text-7xl font-bold tracking-tighter text-white neon-text mb-4 italic">
+      GAMERTAG <span class="text-primary">GENERATOR</span>
+    </h1>
+    <p class="text-slate-400 max-w-lg mx-auto text-lg">
+      Forge your digital identity. Find the ultimate gaming nickname.
+    </p>
+  </header>
+
+  <!-- Generator Controls -->
+  <section class="max-w-3xl mx-auto mb-20">
+    <div class="glass-panel p-8 rounded-xl hud-border">
+
+      <!-- Search Input -->
+      <div class="relative mb-8 group">
+        <div class="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+        <div class="relative flex items-center">
+          <span class="material-icons absolute left-5 text-primary">search</span>
+          <input
+            id="searchInput"
+            class="w-full bg-background-dark/50 border border-primary/40 focus:border-primary focus:ring-1 focus:ring-primary text-xl py-5 pl-14 pr-6 rounded-lg text-white placeholder-slate-500 outline-none transition-all duration-300"
+            placeholder="Type a word like shadow, fire, king..."
+            type="text"
+            autocomplete="off"
+          />
+        </div>
+        <div id="matchHint" class="mt-2 ml-1 text-xs text-primary/70 font-mono h-4"></div>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+
+        <!-- Style Selection -->
+        <div>
+          <label class="block text-xs font-bold text-primary/70 uppercase tracking-widest mb-4">Select Style</label>
+          <div class="flex flex-wrap gap-2" id="styleTags">
+            <button data-style="dark"    class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Dark</button>
+            <button data-style="power"   class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Power</button>
+            <button data-style="scifi"   class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Sci-Fi</button>
+            <button data-style="fantasy" class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Fantasy</button>
+            <button data-style="humor"   class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Humor</button>
+            <button data-style="legend"  class="style-tag px-4 py-2 rounded bg-primary/10 border border-primary/20 hover:border-primary/60 text-slate-300 text-sm transition-colors">Legend</button>
+          </div>
+        </div>
+
+        <!-- Gender Selection -->
+        <div>
+          <label class="block text-xs font-bold text-primary/70 uppercase tracking-widest mb-4">Gender Alignment</label>
+          <div class="flex bg-background-dark/80 p-1 rounded border border-primary/20" id="genderTags">
+            <button data-gender="all"       class="gender-tag flex-1 py-2 text-xs font-bold rounded bg-primary/20 text-primary">All</button>
+            <button data-gender="masculine" class="gender-tag flex-1 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">Masculine</button>
+            <button data-gender="feminine"  class="gender-tag flex-1 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">Feminine</button>
+            <button data-gender="neutral"   class="gender-tag flex-1 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">Neutral</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div class="flex justify-center">
+        <button id="generateBtn" class="btn-shine group px-12 py-4 bg-primary rounded font-bold text-background-dark uppercase tracking-widest transition-all hover:neon-glow hover:scale-105 active:scale-95">
+          <span class="relative z-10 flex items-center gap-2">
+            Generate Tags
+            <span class="material-icons">bolt</span>
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="resultsSection">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-xl font-bold flex items-center gap-2">
+        <span class="w-2 h-6 bg-primary rounded-full"></span>
+        Generated Identities
+      </h2>
+      <span id="resultCount" class="text-sm text-slate-500">0 results</span>
+    </div>
+    <div id="resultsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Empty state -->
+      <div class="col-span-full text-center py-16 text-slate-600">
+        <span class="material-icons text-5xl mb-3 block text-primary/20">videogame_asset</span>
+        <p class="text-sm">Click <span class="text-primary font-bold">Generate Tags</span> to forge your identities</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-32 pt-12 border-t border-primary/10 flex flex-col md:flex-row justify-between items-center gap-8">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/40">
+        <span class="material-icons text-primary">videogame_asset</span>
+      </div>
+      <div>
+        <div class="font-bold text-white">GAMERTAG GENERATOR</div>
+        <div class="text-[10px] text-slate-500 uppercase tracking-[0.3em]">Identity Forge Protocol</div>
+      </div>
+    </div>
+    <div class="flex gap-8 text-sm text-slate-500">
+      <a class="hover:text-primary transition-colors" href="#">Popular Tags</a>
+      <a class="hover:text-primary transition-colors" href="#">API for Streamers</a>
+      <a class="hover:text-primary transition-colors" href="#">Safety Guidelines</a>
+    </div>
+    <div class="text-[10px] text-slate-600 font-mono">
+      SECURE CONNECTION ESTABLISHED // PORT 8080
+    </div>
+  </footer>
+
+</div>
+
+<script>
+// ===== Word Bank =====
+const adjectives = [
+  { word: "Shadow",    style: "dark",    gender: "neutral" },
+  { word: "Dark",      style: "dark",    gender: "neutral" },
+  { word: "Silent",    style: "dark",    gender: "neutral" },
+  { word: "Grim",      style: "dark",    gender: "masculine" },
+  { word: "Cursed",    style: "dark",    gender: "neutral" },
+  { word: "Frozen",    style: "dark",    gender: "neutral" },
+  { word: "Phantom",   style: "dark",    gender: "neutral" },
+  { word: "Wicked",    style: "dark",    gender: "neutral" },
+  { word: "Hollow",    style: "dark",    gender: "neutral" },
+  { word: "Iron",      style: "power",   gender: "masculine" },
+  { word: "Mighty",    style: "power",   gender: "masculine" },
+  { word: "Savage",    style: "power",   gender: "masculine" },
+  { word: "Brutal",    style: "power",   gender: "masculine" },
+  { word: "Raging",    style: "power",   gender: "neutral" },
+  { word: "Storm",     style: "power",   gender: "neutral" },
+  { word: "Blazing",   style: "power",   gender: "neutral" },
+  { word: "Primal",    style: "power",   gender: "masculine" },
+  { word: "Cosmic",    style: "scifi",   gender: "neutral" },
+  { word: "Cyber",     style: "scifi",   gender: "neutral" },
+  { word: "Neon",      style: "scifi",   gender: "neutral" },
+  { word: "Quantum",   style: "scifi",   gender: "neutral" },
+  { word: "Atomic",    style: "scifi",   gender: "neutral" },
+  { word: "Turbo",     style: "scifi",   gender: "neutral" },
+  { word: "Mystic",    style: "fantasy", gender: "neutral" },
+  { word: "Ancient",   style: "fantasy", gender: "neutral" },
+  { word: "Arcane",    style: "fantasy", gender: "neutral" },
+  { word: "Crystal",   style: "fantasy", gender: "feminine" },
+  { word: "Enchanted", style: "fantasy", gender: "feminine" },
+  { word: "Lunar",     style: "fantasy", gender: "feminine" },
+  { word: "Silly",     style: "humor",   gender: "neutral" },
+  { word: "Chunky",    style: "humor",   gender: "neutral" },
+  { word: "Sneaky",    style: "humor",   gender: "neutral" },
+  { word: "Wobble",    style: "humor",   gender: "neutral" },
+  { word: "Funky",     style: "humor",   gender: "neutral" },
+  { word: "Epic",      style: "legend",  gender: "neutral" },
+  { word: "Supreme",   style: "legend",  gender: "neutral" },
+  { word: "Immortal",  style: "legend",  gender: "neutral" },
+  { word: "Glorious",  style: "legend",  gender: "neutral" },
+  { word: "Ultimate",  style: "legend",  gender: "neutral" },
+  { word: "Swift",     style: "legend",  gender: "neutral" },
+  { word: "Noble",     style: "legend",  gender: "neutral" },
+];
+
+const nouns = [
+  { word: "Phantom",   style: "dark",    gender: "neutral" },
+  { word: "Reaper",    style: "dark",    gender: "masculine" },
+  { word: "Demon",     style: "dark",    gender: "neutral" },
+  { word: "Raven",     style: "dark",    gender: "neutral" },
+  { word: "Wraith",    style: "dark",    gender: "neutral" },
+  { word: "Viper",     style: "dark",    gender: "neutral" },
+  { word: "Blade",     style: "dark",    gender: "neutral" },
+  { word: "Ghost",     style: "dark",    gender: "neutral" },
+  { word: "Titan",     style: "power",   gender: "masculine" },
+  { word: "Warrior",   style: "power",   gender: "masculine" },
+  { word: "Crusher",   style: "power",   gender: "masculine" },
+  { word: "Beast",     style: "power",   gender: "neutral" },
+  { word: "Hammer",    style: "power",   gender: "masculine" },
+  { word: "Wolf",      style: "power",   gender: "neutral" },
+  { word: "Fury",      style: "power",   gender: "neutral" },
+  { word: "Nova",      style: "scifi",   gender: "feminine" },
+  { word: "Hacker",    style: "scifi",   gender: "neutral" },
+  { word: "Drone",     style: "scifi",   gender: "neutral" },
+  { word: "Circuit",   style: "scifi",   gender: "neutral" },
+  { word: "Spark",     style: "scifi",   gender: "neutral" },
+  { word: "Dragon",    style: "fantasy", gender: "neutral" },
+  { word: "Knight",    style: "fantasy", gender: "masculine" },
+  { word: "Phoenix",   style: "fantasy", gender: "neutral" },
+  { word: "Wizard",    style: "fantasy", gender: "masculine" },
+  { word: "Luna",      style: "fantasy", gender: "feminine" },
+  { word: "Seraph",    style: "fantasy", gender: "feminine" },
+  { word: "Elf",       style: "fantasy", gender: "neutral" },
+  { word: "Potato",    style: "humor",   gender: "neutral" },
+  { word: "Noodle",    style: "humor",   gender: "neutral" },
+  { word: "Penguin",   style: "humor",   gender: "neutral" },
+  { word: "Muffin",    style: "humor",   gender: "neutral" },
+  { word: "Llama",     style: "humor",   gender: "neutral" },
+  { word: "King",      style: "legend",  gender: "masculine" },
+  { word: "Champion",  style: "legend",  gender: "neutral" },
+  { word: "Legend",    style: "legend",  gender: "neutral" },
+  { word: "Hero",      style: "legend",  gender: "neutral" },
+  { word: "Overlord",  style: "legend",  gender: "masculine" },
+  { word: "Ace",       style: "legend",  gender: "neutral" },
+  { word: "Falcon",    style: "legend",  gender: "neutral" },
+];
+
+const styleLabels = { dark: "Dark", power: "Power", scifi: "Sci-Fi", fantasy: "Fantasy", humor: "Humor", legend: "Legend" };
+
+// ===== State =====
+let selectedStyles = new Set();
+let selectedGender = "all";
+
+// ===== Style Tag Toggle =====
+document.getElementById("styleTags").addEventListener("click", (e) => {
+  const btn = e.target.closest(".style-tag");
+  if (!btn) return;
+  const s = btn.dataset.style;
+  if (selectedStyles.has(s)) {
+    selectedStyles.delete(s);
+    btn.classList.remove("bg-primary", "text-background-dark", "font-bold");
+    btn.classList.add("bg-primary/10", "text-slate-300");
+  } else {
+    selectedStyles.add(s);
+    btn.classList.add("bg-primary", "text-background-dark", "font-bold");
+    btn.classList.remove("bg-primary/10", "text-slate-300");
+  }
+  updateMatchHint();
+});
+
+// ===== Gender Toggle =====
+document.getElementById("genderTags").addEventListener("click", (e) => {
+  const btn = e.target.closest(".gender-tag");
+  if (!btn) return;
+  document.querySelectorAll(".gender-tag").forEach(b => {
+    b.classList.remove("bg-primary/20", "text-primary");
+    b.classList.add("text-slate-400");
+  });
+  btn.classList.add("bg-primary/20", "text-primary");
+  btn.classList.remove("text-slate-400");
+  selectedGender = btn.dataset.gender;
+  updateMatchHint();
+});
+
+// ===== Search =====
+document.getElementById("searchInput").addEventListener("input", updateMatchHint);
+
+function getFilteredWords(wordList) {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  return wordList.filter(item => {
+    const matchStyle  = selectedStyles.size === 0 || selectedStyles.has(item.style);
+    const matchGender = selectedGender === "all" || item.gender === selectedGender || item.gender === "neutral";
+    const matchSearch = !q || item.word.toLowerCase().includes(q);
+    return matchStyle && matchGender && matchSearch;
+  });
+}
+
+function updateMatchHint() {
+  const q = document.getElementById("searchInput").value.trim();
+  const hint = document.getElementById("matchHint");
+  if (!q) { hint.textContent = ""; return; }
+  const total = getFilteredWords(adjectives).length + getFilteredWords(nouns).length;
+  hint.textContent = total + " words matched";
+}
+
+// ===== Generate =====
+document.getElementById("generateBtn").addEventListener("click", generate);
+
+function generate() {
+  const query = document.getElementById("searchInput").value.trim();
+  let filtAdj = getFilteredWords(adjectives);
+  let filtNoun = getFilteredWords(nouns);
+
+  if (query && filtAdj.length === 0 && filtNoun.length === 0) {
+    const cap = query.charAt(0).toUpperCase() + query.slice(1).toLowerCase();
+    filtAdj = adjectives.filter(i => {
+      const ms = selectedStyles.size === 0 || selectedStyles.has(i.style);
+      const mg = selectedGender === "all" || i.gender === selectedGender || i.gender === "neutral";
+      return ms && mg;
+    });
+    filtNoun = nouns.filter(i => {
+      const ms = selectedStyles.size === 0 || selectedStyles.has(i.style);
+      const mg = selectedGender === "all" || i.gender === selectedGender || i.gender === "neutral";
+      return ms && mg;
+    });
+    filtAdj.push({ word: cap, style: "custom", gender: "neutral" });
+    filtNoun.push({ word: cap, style: "custom", gender: "neutral" });
+  }
+
+  if (filtAdj.length === 0) filtAdj = adjectives;
+  if (filtNoun.length === 0) filtNoun = nouns;
+
+  const results = [];
+  const used = new Set();
+
+  while (results.length < 8 && results.length < filtAdj.length * filtNoun.length) {
+    const adj  = filtAdj[Math.floor(Math.random() * filtAdj.length)];
+    const noun = filtNoun[Math.floor(Math.random() * filtNoun.length)];
+    const num  = Math.floor(Math.random() * 1000);
+    const key  = adj.word + noun.word;
+    if (adj.word === noun.word || used.has(key)) continue;
+    used.add(key);
+    results.push({
+      tag: adj.word + noun.word + num,
+      adjStyle: adj.style,
+      nounGender: noun.gender,
+    });
+  }
+
+  renderResults(results);
+}
+
+function renderResults(items) {
+  const grid = document.getElementById("resultsGrid");
+  const count = document.getElementById("resultCount");
+  count.textContent = items.length + " results";
+
+  if (items.length === 0) {
+    grid.innerHTML = '<div class="col-span-full text-center py-16 text-slate-600"><span class="material-icons text-5xl mb-3 block text-primary/20">search_off</span><p class="text-sm">No matches found. Try different filters.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = "";
+
+  items.forEach((item, i) => {
+    const card = document.createElement("div");
+    card.className = "group relative bg-background-dark/40 border border-primary/10 p-6 rounded-xl hover:border-primary/50 transition-all duration-300 cursor-pointer card-enter";
+    card.style.animationDelay = (i * 0.06) + "s";
+
+    const num = String(i + 1).padStart(3, "0");
+    const styleName = styleLabels[item.adjStyle] || item.adjStyle;
+    const genderName = item.nounGender.charAt(0).toUpperCase() + item.nounGender.slice(1);
+
+    card.innerHTML = `
+      <div class="flex justify-between items-start mb-4">
+        <span class="text-xs text-primary/50 font-mono">#${num}</span>
+        <span class="material-icons text-slate-600 group-hover:text-primary transition-colors copy-icon">content_copy</span>
+      </div>
+      <div class="gamertag-text text-2xl font-bold text-white mb-1 group-hover:neon-text">${item.tag}</div>
+      <div class="meta-text text-[10px] text-slate-500 uppercase tracking-widest">${styleName} &bull; ${genderName}</div>
+    `;
+
+    card.addEventListener("click", () => {
+      navigator.clipboard.writeText(item.tag).then(() => {
+        card.classList.remove("border-primary/10", "hover:border-primary/50");
+        card.classList.add("border-emerald-500/50", "copied-flash");
+        card.style.background = "rgba(16, 185, 129, 0.05)";
+        const icon = card.querySelector(".copy-icon");
+        icon.outerHTML = '<span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-2 py-0.5 border border-emerald-500/30 rounded">Copied!</span>';
+        const tagEl = card.querySelector(".gamertag-text");
+        tagEl.classList.remove("group-hover:neon-text");
+
+        setTimeout(() => {
+          card.classList.add("border-primary/10", "hover:border-primary/50");
+          card.classList.remove("border-emerald-500/50", "copied-flash");
+          card.style.background = "";
+          const badge = card.querySelector(".text-emerald-500");
+          if (badge) badge.outerHTML = '<span class="material-icons text-slate-600 group-hover:text-primary transition-colors copy-icon">content_copy</span>';
+          tagEl.classList.add("group-hover:neon-text");
+        }, 1500);
+      });
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+// Auto-generate on load
+generate();
+</script>
+
+</body>
+</html>

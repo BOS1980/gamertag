@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gamertag Generator - Create Unique Gaming Nicknames Instantly</title>
+  <meta name="description" content="Generate unique gaming nicknames for free. Choose from Dark, Power, Sci-Fi, Fantasy, Humor, and Legend styles. No signup required. 6 million+ possible combinations."/>
+  <meta name="keywords" content="gamertag generator, gaming nickname, username generator, gamer name, cool gamertag, Xbox gamertag, PSN name, Steam name"/>
+  <link rel="canonical" href="https://bos1980.github.io/gamertag/"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Gamertag Generator - Create Unique Gaming Nicknames"/>
+  <meta property="og:description" content="Generate unique gaming nicknames for free. 6 styles, 500+ words, millions of combinations."/>
+  <meta property="og:url" content="https://bos1980.github.io/gamertag/"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Gamertag Generator - Create Unique Gaming Nicknames"/>
+  <meta name="twitter:description" content="Generate unique gaming nicknames for free. 6 styles, 500+ words, millions of combinations."/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Structured Data: WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Gamertag Generator",
+    "url": "https://bos1980.github.io/gamertag/",
+    "description": "Free online tool to generate unique gaming nicknames. Choose from 6 styles with 500+ curated words for millions of possible combinations.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a gamertag generator?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A gamertag generator is a free online tool that creates unique gaming nicknames by combining curated words from different style categories like Dark, Power, Sci-Fi, Fantasy, Humor, and Legend. It produces names in PascalCase format with optional numbers, such as ShadowKing42 or CyberNova99."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How many gamertag combinations are possible?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "With approximately 250 adjectives, 250 nouns, and numbers from 0 to 999, there are over 62 million possible gamertag combinations. Even within a single style, there are over 1.6 million unique options."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use these gamertags on Xbox, PlayStation, or Steam?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, the generated gamertags are designed to work on all major gaming platforms including Xbox, PlayStation Network (PSN), Steam, Epic Games, Discord, and more. Each tag uses only letters and numbers with no spaces or special characters."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Background Glow -->
+  <div class="bg-glow" aria-hidden="true">
+    <div class="bg-glow__radial"></div>
+    <div class="bg-glow__blob bg-glow__blob--top"></div>
+    <div class="bg-glow__blob bg-glow__blob--bottom"></div>
+  </div>
+
+  <!-- HUD Corners -->
+  <div class="hud-corner hud-corner--tl" aria-hidden="true"></div>
+  <div class="hud-corner hud-corner--tr" aria-hidden="true"></div>
+  <div class="hud-corner hud-corner--bl" aria-hidden="true"></div>
+  <div class="hud-corner hud-corner--br" aria-hidden="true"></div>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header__badge">System Online: v1.0</div>
+      <h1 class="header__title">GAMERTAG <span class="header__title--accent">GENERATOR</span></h1>
+      <p class="header__slogan">Create unique gaming nicknames from 500+ curated words across 6 styles.</p>
+    </header>
+
+    <!-- Generator Controls -->
+    <section class="controls" aria-label="Generator controls">
+      <div class="controls__panel glass-panel">
+
+        <!-- Search -->
+        <div class="search" role="search">
+          <div class="search__glow"></div>
+          <div class="search__inner">
+            <span class="material-icons search__icon" aria-hidden="true">search</span>
+            <label for="searchInput" class="sr-only">Search words</label>
+            <input
+              id="searchInput"
+              class="search__input"
+              type="text"
+              placeholder="Type a word like shadow, fire, king..."
+              autocomplete="off"
+            />
+          </div>
+          <div class="search__hint" id="matchHint" aria-live="polite"></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <!-- Style -->
+          <fieldset class="filters__group">
+            <legend class="filters__label">Select Style</legend>
+            <div class="filters__tags" id="styleTags" role="group" aria-label="Style filters">
+              <button type="button" class="tag tag--style" data-style="dark" aria-pressed="false">Dark</button>
+              <button type="button" class="tag tag--style" data-style="power" aria-pressed="false">Power</button>
+              <button type="button" class="tag tag--style" data-style="scifi" aria-pressed="false">Sci-Fi</button>
+              <button type="button" class="tag tag--style" data-style="fantasy" aria-pressed="false">Fantasy</button>
+              <button type="button" class="tag tag--style" data-style="humor" aria-pressed="false">Humor</button>
+              <button type="button" class="tag tag--style" data-style="legend" aria-pressed="false">Legend</button>
+            </div>
+          </fieldset>
+
+          <!-- Gender -->
+          <fieldset class="filters__group">
+            <legend class="filters__label">Gender Alignment</legend>
+            <div class="filters__segment" id="genderTags" role="radiogroup" aria-label="Gender filter">
+              <button type="button" class="tag tag--gender tag--active" data-gender="all" role="radio" aria-checked="true">All</button>
+              <button type="button" class="tag tag--gender" data-gender="masculine" role="radio" aria-checked="false">Masculine</button>
+              <button type="button" class="tag tag--gender" data-gender="feminine" role="radio" aria-checked="false">Feminine</button>
+              <button type="button" class="tag tag--gender" data-gender="neutral" role="radio" aria-checked="false">Neutral</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="generate">
+          <button type="button" class="generate__btn" id="generateBtn">
+            <span class="generate__btn-text">
+              Generate Tags
+              <span class="material-icons" aria-hidden="true">bolt</span>
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results" aria-label="Generated gamertags">
+      <div class="results__header">
+        <h2 class="results__title">
+          <span class="results__title-bar" aria-hidden="true"></span>
+          Generated Identities
+        </h2>
+        <span class="results__count" id="resultCount" aria-live="polite">0 results</span>
+      </div>
+      <div class="results__grid" id="resultsGrid" role="list">
+        <div class="results__empty" role="listitem">
+          <span class="material-icons results__empty-icon" aria-hidden="true">videogame_asset</span>
+          <p>Click <strong>Generate Tags</strong> to forge your identities</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEO Content Section -->
+    <section class="seo-content" aria-label="About Gamertag Generator">
+      <h2>What is a Gamertag Generator?</h2>
+      <p>A gamertag generator is a free tool that creates unique gaming nicknames by combining words from a curated word bank. This generator uses over 500 hand-picked words across 6 style categories (Dark, Power, Sci-Fi, Fantasy, Humor, Legend) and 3 gender tones to produce names like <strong>ShadowKing42</strong> or <strong>CyberNova99</strong>. With 250 adjectives, 250 nouns, and numbers from 0-999, there are over 62 million possible combinations.</p>
+
+      <h2>How to Use This Gamertag Generator</h2>
+      <ol>
+        <li><strong>Search</strong>: Type a keyword (like "fire" or "dragon") to match words from the bank, or leave it blank for random results.</li>
+        <li><strong>Filter by style</strong>: Pick one or more styles. Dark for edgy names, Power for strong ones, Humor for funny tags.</li>
+        <li><strong>Choose gender tone</strong>: Select Masculine, Feminine, Neutral, or All to shape the vibe of your name.</li>
+        <li><strong>Generate</strong>: Click the button to get 8 unique gamertags.</li>
+        <li><strong>Copy</strong>: Click any result card to copy it to your clipboard instantly.</li>
+      </ol>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>Can I use these gamertags on Xbox, PlayStation, or Steam?</h3>
+      <p>Yes. Generated names use only letters and numbers with no spaces or special characters, so they work on Xbox Live, PSN, Steam, Epic Games, Discord, Riot Games, and other platforms.</p>
+
+      <h3>How many gamertag combinations are possible?</h3>
+      <p>Over 62 million. The generator combines 250 adjectives with 250 nouns and appends a number from 0 to 999 (250 x 250 x 1000 = 62,500,000). Within a single style, there are still over 1.6 million options.</p>
+
+      <h3>Is this tool free to use?</h3>
+      <p>Yes, completely free. No signup, no ads, no data collection. Everything runs in your browser.</p>
+
+      <h3>What if my keyword is not in the word bank?</h3>
+      <p>The generator will use your keyword directly in combinations. For example, typing "fire" will produce names like FireKing42 or ShadowFire77 even if "fire" is not in the default word list.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer__brand">
+        <div class="footer__icon">
+          <span class="material-icons" aria-hidden="true">videogame_asset</span>
+        </div>
+        <div>
+          <div class="footer__name">GAMERTAG GENERATOR</div>
+          <div class="footer__sub">Identity Forge Protocol</div>
+        </div>
+      </div>
+      <nav class="footer__links" aria-label="Footer navigation">
+        <a href="#" aria-label="Popular gamertags">Popular Tags</a>
+        <a href="#" aria-label="API for streamers">API for Streamers</a>
+        <a href="#" aria-label="Safety guidelines">Safety Guidelines</a>
+      </nav>
+      <div class="footer__status">SECURE CONNECTION ESTABLISHED // PORT 8080</div>
+    </footer>
+
+  </div>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
