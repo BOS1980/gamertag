@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamertag Generator — Prototype</title>
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== Background Glow ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, rgba(124,58,237,0.04) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== Title Area ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .header .slogan {
+    font-size: 1.05rem;
+    color: #8892a6;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+
+  /* ===== Search Area ===== */
+  .search-section {
+    margin-bottom: 32px;
+  }
+
+  .search-wrapper {
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 16px 20px 16px 48px;
+    font-size: 1.05rem;
+    background: rgba(22, 33, 62, 0.6);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    color: #e0e0e0;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .search-input::placeholder {
+    color: #4a5568;
+  }
+
+  .search-input:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.12), 0 0 20px rgba(0,212,255,0.06);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a5568;
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+
+  .match-hint {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: #00d4ff;
+    padding-left: 4px;
+    min-height: 20px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .match-hint.visible {
+    opacity: 1;
+  }
+
+  /* ===== Filter Section ===== */
+  .filter-section {
+    margin-bottom: 32px;
+  }
+
+  .filter-group {
+    margin-bottom: 20px;
+  }
+
+  .filter-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #5a6478;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  /* ===== Style Tags ===== */
+  .style-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .style-tag {
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #8892a6;
+    transition: all 0.25s;
+    user-select: none;
+  }
+
+  .style-tag:hover {
+    border-color: rgba(0,212,255,0.4);
+    color: #c0c8d8;
+  }
+
+  .style-tag.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(124,58,237,0.18));
+    border-color: #00d4ff;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0,212,255,0.1);
+  }
+
+  .style-tag .tag-icon {
+    margin-right: 5px;
+  }
+
+  /* ===== Gender Filter ===== */
+  .gender-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .gender-tag {
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: #6b7689;
+    transition: all 0.25s;
+    user-select: none;
+  }
+
+  .gender-tag:hover {
+    border-color: rgba(124,58,237,0.4);
+    color: #b0b8c8;
+  }
+
+  .gender-tag.active {
+    background: rgba(124,58,237,0.15);
+    border-color: #7c3aed;
+    color: #ffffff;
+  }
+
+  /* ===== Generate Button ===== */
+  .generate-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .generate-btn {
+    padding: 15px 56px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,212,255,0.25), 0 2px 12px rgba(124,58,237,0.2);
+  }
+
+  .generate-btn:active {
+    transform: translateY(0);
+  }
+
+  .generate-btn .btn-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+
+  /* ===== Results Area ===== */
+  .results-section {
+    min-height: 100px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  @media (min-width: 640px) {
+    .results-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+    }
+    .style-tags {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .style-tag {
+      flex-shrink: 0;
+    }
+  }
+
+  /* ===== Result Card ===== */
+  .result-card {
+    background: rgba(22, 33, 62, 0.5);
+    border: 1.5px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 22px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.3s, box-shadow 0.3s, background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,212,255,0.35);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.08);
+    background: rgba(22, 33, 62, 0.7);
+  }
+
+  .result-card .gamertag {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+  }
+
+  .result-card .copy-hint {
+    font-size: 0.7rem;
+    color: #4a5568;
+    margin-top: 6px;
+    transition: opacity 0.2s;
+  }
+
+  .result-card:hover .copy-hint {
+    color: #6b7689;
+  }
+
+  /* Copied state */
+  .result-card.copied {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.08);
+  }
+
+  .result-card.copied .gamertag {
+    color: #10b981;
+  }
+
+  .result-card.copied .copy-hint {
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  /* ===== Empty State ===== */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #3a4458;
+  }
+
+  .empty-state .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  .empty-state p {
+    font-size: 0.95rem;
+  }
+
+  /* ===== Animation ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card.animate {
+    animation: fadeInUp 0.35s ease forwards;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Title Area -->
+  <header class="header">
+    <h1>Gamertag Generator</h1>
+    <p class="slogan">Find your gaming identity</p>
+  </header>
+
+  <!-- Search Area -->
+  <section class="search-section">
+    <div class="search-wrapper">
+      <span class="search-icon">&#128269;</span>
+      <input
+        type="text"
+        class="search-input"
+        id="searchInput"
+        placeholder="Type a word like shadow, fire, king..."
+        autocomplete="off"
+      />
+    </div>
+    <div class="match-hint" id="matchHint">12 words matched</div>
+  </section>
+
+  <!-- Filter Section -->
+  <section class="filter-section">
+
+    <!-- Style Tags -->
+    <div class="filter-group">
+      <div class="filter-label">Style</div>
+      <div class="style-tags" id="styleTags">
+        <span class="style-tag" data-style="dark"><span class="tag-icon">&#9760;</span>Dark</span>
+        <span class="style-tag" data-style="power"><span class="tag-icon">&#9889;</span>Power</span>
+        <span class="style-tag" data-style="scifi"><span class="tag-icon">&#128640;</span>Sci-Fi</span>
+        <span class="style-tag" data-style="fantasy"><span class="tag-icon">&#128050;</span>Fantasy</span>
+        <span class="style-tag" data-style="humor"><span class="tag-icon">&#129325;</span>Humor</span>
+        <span class="style-tag" data-style="legend"><span class="tag-icon">&#127942;</span>Legend</span>
+      </div>
+    </div>
+
+    <!-- Gender Filter -->
+    <div class="filter-group">
+      <div class="filter-label">Gender</div>
+      <div class="gender-tags" id="genderTags">
+        <span class="gender-tag active" data-gender="all">All</span>
+        <span class="gender-tag" data-gender="masculine">Masculine</span>
+        <span class="gender-tag" data-gender="feminine">Feminine</span>
+        <span class="gender-tag" data-gender="neutral">Neutral</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Generate Button -->
+  <section class="generate-section">
+    <button class="generate-btn" id="generateBtn">
+      <span class="btn-icon">&#127922;</span>Generate
+    </button>
+  </section>
+
+  <!-- Results Area -->
+  <section class="results-section">
+    <div id="resultsContainer">
+      <div class="empty-state">
+        <div class="empty-icon">&#127918;</div>
+        <p>Click Generate to create your gamertags</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // ===== Sample Word Bank (prototype demo data) =====
+  const adjectives = [
+    { word: "Shadow",    style: "dark",    gender: "neutral" },
+    { word: "Dark",      style: "dark",    gender: "neutral" },
+    { word: "Silent",    style: "dark",    gender: "neutral" },
+    { word: "Grim",      style: "dark",    gender: "masculine" },
+    { word: "Cursed",    style: "dark",    gender: "neutral" },
+    { word: "Iron",      style: "power",   gender: "masculine" },
+    { word: "Mighty",    style: "power",   gender: "masculine" },
+    { word: "Savage",    style: "power",   gender: "masculine" },
+    { word: "Brutal",    style: "power",   gender: "masculine" },
+    { word: "Raging",    style: "power",   gender: "neutral" },
+    { word: "Cosmic",    style: "scifi",   gender: "neutral" },
+    { word: "Cyber",     style: "scifi",   gender: "neutral" },
+    { word: "Neon",      style: "scifi",   gender: "neutral" },
+    { word: "Quantum",   style: "scifi",   gender: "neutral" },
+    { word: "Atomic",    style: "scifi",   gender: "neutral" },
+    { word: "Mystic",    style: "fantasy", gender: "neutral" },
+    { word: "Ancient",   style: "fantasy", gender: "neutral" },
+    { word: "Arcane",    style: "fantasy", gender: "neutral" },
+    { word: "Crystal",   style: "fantasy", gender: "feminine" },
+    { word: "Enchanted", style: "fantasy", gender: "feminine" },
+    { word: "Silly",     style: "humor",   gender: "neutral" },
+    { word: "Chunky",    style: "humor",   gender: "neutral" },
+    { word: "Sneaky",    style: "humor",   gender: "neutral" },
+    { word: "Wobble",    style: "humor",   gender: "neutral" },
+    { word: "Funky",     style: "humor",   gender: "neutral" },
+    { word: "Epic",      style: "legend",  gender: "neutral" },
+    { word: "Supreme",   style: "legend",  gender: "neutral" },
+    { word: "Immortal",  style: "legend",  gender: "neutral" },
+    { word: "Glorious",  style: "legend",  gender: "neutral" },
+    { word: "Ultimate",  style: "legend",  gender: "neutral" },
+    { word: "Frozen",    style: "dark",    gender: "neutral" },
+    { word: "Lunar",     style: "fantasy", gender: "feminine" },
+    { word: "Storm",     style: "power",   gender: "neutral" },
+    { word: "Phantom",   style: "dark",    gender: "neutral" },
+    { word: "Blazing",   style: "power",   gender: "neutral" },
+    { word: "Swift",     style: "legend",  gender: "neutral" },
+    { word: "Noble",     style: "legend",  gender: "neutral" },
+    { word: "Wicked",    style: "dark",    gender: "neutral" },
+    { word: "Turbo",     style: "scifi",   gender: "neutral" },
+    { word: "Primal",    style: "power",   gender: "masculine" },
+  ];
+
+  const nouns = [
+    { word: "Phantom",   style: "dark",    gender: "neutral" },
+    { word: "Reaper",    style: "dark",    gender: "masculine" },
+    { word: "Demon",     style: "dark",    gender: "neutral" },
+    { word: "Raven",     style: "dark",    gender: "neutral" },
+    { word: "Wraith",    style: "dark",    gender: "neutral" },
+    { word: "Titan",     style: "power",   gender: "masculine" },
+    { word: "Warrior",   style: "power",   gender: "masculine" },
+    { word: "Crusher",   style: "power",   gender: "masculine" },
+    { word: "Beast",     style: "power",   gender: "neutral" },
+    { word: "Hammer",    style: "power",   gender: "masculine" },
+    { word: "Nova",      style: "scifi",   gender: "feminine" },
+    { word: "Hacker",    style: "scifi",   gender: "neutral" },
+    { word: "Drone",     style: "scifi",   gender: "neutral" },
+    { word: "Circuit",   style: "scifi",   gender: "neutral" },
+    { word: "Android",   style: "scifi",   gender: "neutral" },
+    { word: "Dragon",    style: "fantasy", gender: "neutral" },
+    { word: "Knight",    style: "fantasy", gender: "masculine" },
+    { word: "Phoenix",   style: "fantasy", gender: "neutral" },
+    { word: "Wizard",    style: "fantasy", gender: "masculine" },
+    { word: "Elf",       style: "fantasy", gender: "neutral" },
+    { word: "Potato",    style: "humor",   gender: "neutral" },
+    { word: "Noodle",    style: "humor",   gender: "neutral" },
+    { word: "Penguin",   style: "humor",   gender: "neutral" },
+    { word: "Muffin",    style: "humor",   gender: "neutral" },
+    { word: "Llama",     style: "humor",   gender: "neutral" },
+    { word: "King",      style: "legend",  gender: "masculine" },
+    { word: "Champion",  style: "legend",  gender: "neutral" },
+    { word: "Legend",    style: "legend",  gender: "neutral" },
+    { word: "Hero",      style: "legend",  gender: "neutral" },
+    { word: "Overlord",  style: "legend",  gender: "masculine" },
+    { word: "Luna",      style: "fantasy", gender: "feminine" },
+    { word: "Seraph",    style: "fantasy", gender: "feminine" },
+    { word: "Viper",     style: "dark",    gender: "neutral" },
+    { word: "Wolf",      style: "power",   gender: "neutral" },
+    { word: "Blade",     style: "dark",    gender: "neutral" },
+    { word: "Fury",      style: "power",   gender: "neutral" },
+    { word: "Ace",       style: "legend",  gender: "neutral" },
+    { word: "Ghost",     style: "dark",    gender: "neutral" },
+    { word: "Spark",     style: "scifi",   gender: "neutral" },
+    { word: "Falcon",    style: "legend",  gender: "neutral" },
+  ];
+
+  // ===== State =====
+  let selectedStyles = new Set();
+  let selectedGender = "all";
+
+  // ===== Style Tag Toggle =====
+  document.getElementById("styleTags").addEventListener("click", (e) => {
+    const tag = e.target.closest(".style-tag");
+    if (!tag) return;
+    const style = tag.dataset.style;
+    if (selectedStyles.has(style)) {
+      selectedStyles.delete(style);
+      tag.classList.remove("active");
+    } else {
+      selectedStyles.add(style);
+      tag.classList.add("active");
+    }
+    updateMatchHint();
+  });
+
+  // ===== Gender Tag Toggle =====
+  document.getElementById("genderTags").addEventListener("click", (e) => {
+    const tag = e.target.closest(".gender-tag");
+    if (!tag) return;
+    document.querySelectorAll(".gender-tag").forEach(t => t.classList.remove("active"));
+    tag.classList.add("active");
+    selectedGender = tag.dataset.gender;
+    updateMatchHint();
+  });
+
+  // ===== Search Input =====
+  document.getElementById("searchInput").addEventListener("input", () => {
+    updateMatchHint();
+  });
+
+  function getFilteredWords(wordList) {
+    const query = document.getElementById("searchInput").value.trim().toLowerCase();
+    return wordList.filter(item => {
+      const matchStyle = selectedStyles.size === 0 || selectedStyles.has(item.style);
+      const matchGender = selectedGender === "all" || item.gender === selectedGender || item.gender === "neutral";
+      const matchSearch = !query || item.word.toLowerCase().includes(query);
+      return matchStyle && matchGender && matchSearch;
+    });
+  }
+
+  function updateMatchHint() {
+    const query = document.getElementById("searchInput").value.trim();
+    const hint = document.getElementById("matchHint");
+    if (!query) {
+      hint.classList.remove("visible");
+      return;
+    }
+    const matchedAdj = getFilteredWords(adjectives);
+    const matchedNoun = getFilteredWords(nouns);
+    const total = matchedAdj.length + matchedNoun.length;
+    hint.textContent = total + " words matched";
+    hint.classList.add("visible");
+  }
+
+  // ===== Generate =====
+  document.getElementById("generateBtn").addEventListener("click", generate);
+
+  function generate() {
+    const query = document.getElementById("searchInput").value.trim();
+    let filteredAdj = getFilteredWords(adjectives);
+    let filteredNoun = getFilteredWords(nouns);
+
+    // If search has no matches, use query as a word
+    const useQueryAsWord = query && filteredAdj.length === 0 && filteredNoun.length === 0;
+    if (useQueryAsWord) {
+      const capitalized = query.charAt(0).toUpperCase() + query.slice(1).toLowerCase();
+      filteredAdj = adjectives.filter(item => {
+        const matchStyle = selectedStyles.size === 0 || selectedStyles.has(item.style);
+        const matchGender = selectedGender === "all" || item.gender === selectedGender || item.gender === "neutral";
+        return matchStyle && matchGender;
+      });
+      filteredNoun = nouns.filter(item => {
+        const matchStyle = selectedStyles.size === 0 || selectedStyles.has(item.style);
+        const matchGender = selectedGender === "all" || item.gender === selectedGender || item.gender === "neutral";
+        return matchStyle && matchGender;
+      });
+      // Inject user word into both pools
+      filteredAdj.push({ word: capitalized, style: "custom", gender: "neutral" });
+      filteredNoun.push({ word: capitalized, style: "custom", gender: "neutral" });
+    }
+
+    // Fallback: if filters are too strict
+    if (filteredAdj.length === 0) filteredAdj = adjectives;
+    if (filteredNoun.length === 0) filteredNoun = nouns;
+
+    const results = [];
+    const used = new Set();
+    const count = 9;
+
+    while (results.length < count && results.length < filteredAdj.length * filteredNoun.length) {
+      const adj = filteredAdj[Math.floor(Math.random() * filteredAdj.length)];
+      const noun = filteredNoun[Math.floor(Math.random() * filteredNoun.length)];
+      const num = Math.floor(Math.random() * 1000);
+      const tag = adj.word + noun.word + num;
+      if (!used.has(adj.word + noun.word)) {
+        used.add(adj.word + noun.word);
+        results.push(tag);
+      }
+    }
+
+    renderResults(results);
+  }
+
+  function renderResults(tags) {
+    const container = document.getElementById("resultsContainer");
+    if (tags.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">&#128533;</div><p>No matches found. Try different filters.</p></div>';
+      return;
+    }
+
+    const grid = document.createElement("div");
+    grid.className = "results-grid";
+
+    tags.forEach((tag, i) => {
+      const card = document.createElement("div");
+      card.className = "result-card animate";
+      card.style.animationDelay = (i * 0.05) + "s";
+      card.innerHTML = '<div class="gamertag">' + tag + '</div><div class="copy-hint">Click to copy</div>';
+
+      card.addEventListener("click", () => {
+        navigator.clipboard.writeText(tag).then(() => {
+          card.classList.add("copied");
+          card.querySelector(".copy-hint").textContent = "Copied!";
+          setTimeout(() => {
+            card.classList.remove("copied");
+            card.querySelector(".copy-hint").textContent = "Click to copy";
+          }, 1500);
+        });
+      });
+
+      grid.appendChild(card);
+    });
+
+    container.innerHTML = "";
+    container.appendChild(grid);
+  }
+
+  // Generate initial set on load
+  generate();
+</script>
+
+</body>
+</html>
