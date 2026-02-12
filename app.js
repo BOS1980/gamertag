@@ -96,6 +96,70 @@
   // ===== Search Input =====
   searchInput.addEventListener("input", updateMatchHint);
 
+  // ===== Tag Stylization =====
+  // Randomly apply different name formats for variety
+  var SEPARATORS = ["", "_", ".", "-"];
+  var LEET_MAP = { a: "4", e: "3", i: "1", o: "0", s: "5", t: "7" };
+
+  function stylizeTag(word1, word2) {
+    var style = Math.floor(Math.random() * 10);
+
+    switch (style) {
+      case 0: // PascalCase + number: ShadowKing42
+        return word1 + word2 + randNum(2);
+      case 1: // PascalCase no number: ShadowKing
+        return word1 + word2;
+      case 2: // With separator: Shadow_King
+        return word1 + pickRandom(SEPARATORS) + word2;
+      case 3: // Separator + number: Shadow_King99
+        return word1 + pickRandom(SEPARATORS) + word2 + randNum(2);
+      case 4: // Leet speak: Sh4d0wKing
+        return leetSpeak(word1) + word2;
+      case 5: // Leet speak both: Sh4d0wK1ng
+        return leetSpeak(word1) + leetSpeak(word2);
+      case 6: // camelCase: shadowKing
+        return word1.toLowerCase() + word2;
+      case 7: // Number in middle: Shadow42King
+        return word1 + randNum(2) + word2;
+      case 8: // Lowercase prefix + PascalCase: xShadowKing
+        var prefixes = ["x", "ii", "el", "da", "lil", "mr", "ms"];
+        return pickRandom(prefixes) + word1 + word2;
+      case 9: // Add z/x suffix: ShadowKingz
+        var suffixes = ["z", "x", "o", "ii", "zz"];
+        return word1 + word2 + pickRandom(suffixes);
+      default:
+        return word1 + word2;
+    }
+  }
+
+  function leetSpeak(word) {
+    var result = "";
+    var swapped = false;
+    for (var i = 0; i < word.length; i++) {
+      var ch = word[i];
+      var lower = ch.toLowerCase();
+      // Only replace some letters randomly for a natural look
+      if (LEET_MAP[lower] && !swapped && Math.random() < 0.5) {
+        result += LEET_MAP[lower];
+        swapped = true;
+      } else {
+        result += ch;
+      }
+    }
+    return result;
+  }
+
+  function randNum(digits) {
+    if (Math.random() < 0.3) return ""; // 30% chance no number at all
+    var d = Math.random() < 0.5 ? 2 : 3;
+    var max = Math.pow(10, d);
+    return String(Math.floor(Math.random() * max));
+  }
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   // ===== Generate =====
   generateBtn.addEventListener("click", generate);
 
@@ -104,13 +168,13 @@
     var filtAdj = getFilteredWords(adjectives);
     var filtNoun = getFilteredWords(nouns);
 
-    // If search query has no matches, inject user word directly
+    // If search query has no matches, force user word into every result
     if (query && filtAdj.length === 0 && filtNoun.length === 0) {
       var capitalized =
         query.charAt(0).toUpperCase() + query.slice(1).toLowerCase();
       var hasStyleFilter = Object.keys(selectedStyles).length > 0;
 
-      filtAdj = adjectives.filter(function (item) {
+      var poolAdj = adjectives.filter(function (item) {
         var ms = !hasStyleFilter || selectedStyles[item.style];
         var mg =
           selectedGender === "all" ||
@@ -118,7 +182,7 @@
           item.gender === "neutral";
         return ms && mg;
       });
-      filtNoun = nouns.filter(function (item) {
+      var poolNoun = nouns.filter(function (item) {
         var ms = !hasStyleFilter || selectedStyles[item.style];
         var mg =
           selectedGender === "all" ||
@@ -127,8 +191,38 @@
         return ms && mg;
       });
 
-      filtAdj.push({ word: capitalized, style: "custom", gender: "neutral" });
-      filtNoun.push({ word: capitalized, style: "custom", gender: "neutral" });
+      if (poolAdj.length === 0) poolAdj = adjectives;
+      if (poolNoun.length === 0) poolNoun = nouns;
+
+      var results = [];
+      var used = {};
+      var maxAttempts = RESULT_COUNT * 20;
+      var attempts = 0;
+      var userWord = { word: capitalized, style: "custom", gender: "neutral" };
+
+      while (results.length < RESULT_COUNT && attempts < maxAttempts) {
+        attempts++;
+        var asAdj = Math.random() < 0.5;
+        var adj, noun;
+        if (asAdj) {
+          adj = userWord;
+          noun = poolNoun[Math.floor(Math.random() * poolNoun.length)];
+        } else {
+          adj = poolAdj[Math.floor(Math.random() * poolAdj.length)];
+          noun = userWord;
+        }
+        var tag = stylizeTag(adj.word, noun.word);
+        if (used[tag]) continue;
+        used[tag] = true;
+        results.push({
+          tag: tag,
+          style: asAdj ? noun.style : adj.style,
+          gender: asAdj ? noun.gender : adj.gender,
+        });
+      }
+
+      renderResults(results);
+      return;
     }
 
     // Fallback if filters too strict
@@ -144,14 +238,15 @@
       attempts++;
       var adj = filtAdj[Math.floor(Math.random() * filtAdj.length)];
       var noun = filtNoun[Math.floor(Math.random() * filtNoun.length)];
-      var key = adj.word + noun.word;
 
-      if (adj.word === noun.word || used[key]) continue;
-      used[key] = true;
+      if (adj.word === noun.word) continue;
 
-      var num = Math.floor(Math.random() * 1000);
+      var tag = stylizeTag(adj.word, noun.word);
+      if (used[tag]) continue;
+      used[tag] = true;
+
       results.push({
-        tag: adj.word + noun.word + num,
+        tag: tag,
         style: adj.style,
         gender: noun.gender,
       });
